@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
@@ -42,7 +44,9 @@ public class TokenService {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
         cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec);
         byte[] encryptedBytes = cipher.doFinal(combined.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+        String encryptedToken = Base64.getEncoder().encodeToString(encryptedBytes);
+        String urlEncodedToken = URLEncoder.encode(encryptedToken, StandardCharsets.UTF_8.toString());
+        return urlEncodedToken;
     }
 
     // Decrypt the email and token

@@ -147,7 +147,6 @@ public class DevService {
             }
 //          then take the id add token and generate url
             String encryptedData = tokenService.generateEncryptedIdAndToken(dev.getId());
-
 //          then send url to email
             String resetUrl = frontendUrl + "?token=" + encryptedData;
             String subject = "KC Authenticator - Password reset request";

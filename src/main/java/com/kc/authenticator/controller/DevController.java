@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/dev")
 public class DevController {
 
@@ -48,36 +49,34 @@ public class DevController {
         try {
             Dev existingDev = devService.getDevByEmail(dev.getDevEmail());
             if (existingDev != null) {
-                System.out.println(existingDev.toString());
-                return ResponseEntity.badRequest().body(new DevResponse(null, "Developer already registered!", false));
+                return ResponseEntity.accepted().body(new DevResponse(null, "Developer already registered!", false));
             }
             TempDev tempDev = new TempDev(dev);
-            otpService.generateOTP(dev.getDevEmail());
-            tempDevService.saveTempDev(tempDev);
-            Dev response = dev.removePassword();
+            tempDev = tempDevService.saveTempDev(tempDev);
+            OTP generatedOtp = otpService.generateOTP(tempDev.getId(), tempDev.getDevEmail());
+            Dev response = tempDev.removePassword();
             return ResponseEntity.ok(new DevResponse(response, "OTP send successfully", true));
         } catch (Exception e) {
             // Log the exception (logging framework would be used in a real application)
-            return ResponseEntity.internalServerError().body(new DevResponse(null, "Dev registration failed!"));
+            System.out.println(e);
+            return ResponseEntity.internalServerError().body(new DevResponse(null, "Dev registration failed! " + e, false));
         }
     }
 
     @PostMapping("/validate-signup")
     public ResponseEntity<DevResponse> validateSignUp(@RequestBody OTP request) {
-        request.setDevEmail(request.getDevEmail().toLowerCase());
-        boolean isValid = otpService.validateOTP(request.getDevEmail(), request.getOtp());
+        boolean isValid = otpService.validateOTP(request.getReferenceId(), request.getOtp());
 
-        TempDev tempDev = tempDevService.getByDevEmail(request.getDevEmail());
-
+        TempDev tempDev = tempDevService.getById(request.getReferenceId());
         if (isValid && tempDev != null) {
             Dev dev = new Dev(tempDev);
             devService.saveDeveloper(dev);
             tempDevService.deleteDev(tempDev.getId());
-            otpService.deleteOTP(request.getDevEmail());
+            otpService.deleteOTP(request.getReferenceId());
             dev = dev.removePassword();
             return ResponseEntity.ok(new DevResponse(dev, "Developer Registration Successful."));
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new DevResponse(null, "Invalid OTP or OTP has expired"));
+            return ResponseEntity.accepted().body(new DevResponse(null, "Invalid OTP or OTP has expired", false));
         }
     }
 
@@ -117,11 +116,11 @@ public class DevController {
         }
     }
 
-    @GetMapping("/validate-otp")
-    public ResponseEntity<DevResponse> validateOtp(@RequestBody OTP otp) {
+    @PostMapping("/resend-otp")
+    public ResponseEntity<DevResponse> resendOtp(@RequestParam("referenceId") String referenceId) {
         try {
-            Boolean isValid = otpService.validateOTP(otp.getDevEmail(), otp.getOtp());
-            return ResponseEntity.ok().body(new DevResponse(null, isValid ? "Otp is correct" : "Otp is not valid", isValid));
+            DevResponse response =  otpService.resendOtp(referenceId);
+            return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(new DevResponse(null, "Internal Server error while getting developer by id", false));
         }
@@ -129,21 +128,21 @@ public class DevController {
 
     @PostMapping("/password-reset-link")
     public ResponseEntity<DevResponse> sendPasswordResetLink(@RequestBody PasswordResetRequest req) {
-        try{
+        try {
             DevResponse response = devService.sendPasswordResetLink(req.getEmail(), req.getFrontendUrl());
             return ResponseEntity.ok().body(response);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.internalServerError().body(new DevResponse(null, "Internal Server error while sending password reset link to mail", false));
         }
     }
 
     @PostMapping("/update-password")
-    public ResponseEntity<DevResponse> updatePassword(@RequestBody PasswordUpdate req){
-        try{
+    public ResponseEntity<DevResponse> updatePassword(@RequestBody PasswordUpdate req) {
+        try {
             DevResponse response = devService.updatePassword(req.getToken(), req.getPassword());
             return ResponseEntity.ok().body(response);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
             return ResponseEntity.internalServerError().body(new DevResponse(null, "Internal Server error while sending updating password", false));
         }

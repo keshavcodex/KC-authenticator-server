@@ -1,6 +1,8 @@
 package com.kc.authenticator.services;
 
+import com.kc.authenticator.dto.DevResponse;
 import com.kc.authenticator.model.OTP;
+import com.kc.authenticator.model.TempDev;
 import com.kc.authenticator.repository.OTPRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,14 @@ public class OTPService {
     private OTPRepository otpRepository;
 
     @Autowired
+    private TempDevService tempDevService;
+
+    @Autowired
     private EmailService emailService;
 
-    public void generateOTP(String email) {
+    public OTP generateOTP(String referenceId, String email) {
         String otp = new DecimalFormat("000000").format(new Random().nextInt(1000000));
-        Optional<OTP> existingOtp = otpRepository.findByDevEmail(email);
+        Optional<OTP> existingOtp = otpRepository.findByReferenceId(referenceId);
 
         OTP otpEntity;
         if (existingOtp.isPresent()) {
@@ -33,10 +38,13 @@ public class OTPService {
             otpEntity.setOtp(otp);
             otpEntity.resetExpires(otpDuration);
         } else {
-            otpEntity = new OTP(otp, email, otpDuration);
+            otpEntity = new OTP(otp, referenceId, otpDuration);
         }
-        otpRepository.save(otpEntity);
-        //Sending the generated email
+        String emailResponse = sendOTP(otp, email);
+        return otpRepository.save(otpEntity);
+    }
+
+    public String sendOTP(String otp, String email) {
         try {
             String subject = "KC Authenticator - OTP for Authentication";
             String year = String.valueOf(java.time.Year.now().getValue());
@@ -64,23 +72,34 @@ public class OTPService {
                             "</html>", otp, year
             );
             emailService.sendEmail(email, subject, body);
+            return "Email sent";
         } catch (MessagingException e) {
-            // Handle the exception
-            e.printStackTrace();
+            System.out.println(e);
+            return "Too many emails sent";
         }
+
+
     }
 
-    public Boolean validateOTP(String email, String otp) {
-        OTP otpEntity = otpRepository.findByDevEmailAndOtp(email, otp).orElse(null);
-
-        return otpEntity != null;
+    public Boolean validateOTP(String referenceId, String otp) {
+        Optional<OTP> otpEntity = otpRepository.findByReferenceIdAndOtp(referenceId, otp);
+        return otpEntity.isPresent();
     }
 
-    public void deleteOTP(String email) {
-        OTP otpEntity = otpRepository.findByDevEmail(email).orElse(null);
+    public void deleteOTP(String referenceId) {
+        otpRepository.findByReferenceId(referenceId).ifPresent(otpEntity -> otpRepository.delete(otpEntity));
+    }
 
-        if (otpEntity != null) {
-            otpRepository.delete(otpEntity);
+    public DevResponse resendOtp(String referenceId) {
+        try {
+            deleteOTP(referenceId);
+            TempDev tempDev = tempDevService.getById(referenceId);
+            if (tempDev == null) return new DevResponse(null, "Please register again", false);
+            generateOTP(referenceId, tempDev.getDevEmail());
+            return new DevResponse(null, "Email sent", false);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new DevResponse(null, e + "", false);
         }
     }
 }

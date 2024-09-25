@@ -28,6 +28,10 @@ public class TempDevService {
         return tempDevRepository.findByDevEmail(email);
     }
 
+    public TempDev getById(String id) {
+        return tempDevRepository.findById(id).orElse(null);
+    }
+
     public TempDev getDevById(String id) {
         Optional<TempDev> devOptional = tempDevRepository.findById(id);
         return devOptional.orElse(null);
@@ -55,12 +59,10 @@ public class TempDevService {
         if (existingDev != null) {
             tempDev.setId(existingDev.getId());
         }
-
         // Encrypt the password before saving
         if (tempDev.getPassword() != null && !tempDev.getPassword().isEmpty()) {
             tempDev.setPassword(passwordEncoder.encode(tempDev.getPassword()));
         }
-
         return tempDevRepository.save(tempDev);
     }
 
