@@ -25,7 +25,7 @@ public class DevResponse {
     public DevResponse(Dev developer, String message) {
         this.developer = developer;
         this.message = message;
-        this.isSuccess = true;
+        this.isSuccess = developer != null;
     }
 
     public DevResponse(Dev developer, String message, Boolean isSuccess) {

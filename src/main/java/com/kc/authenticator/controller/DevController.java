@@ -7,12 +7,10 @@ import com.kc.authenticator.dto.PasswordUpdate;
 import com.kc.authenticator.model.*;
 import com.kc.authenticator.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/dev")
 public class DevController {
 
@@ -40,7 +38,7 @@ public class DevController {
             return ResponseEntity.accepted().body(response);
         } catch (Exception e) {
             System.out.println(e);
-            return ResponseEntity.internalServerError().body(new DevResponse(null, "Internal Server error while loggin", false));
+            return ResponseEntity.internalServerError().body(new DevResponse(null, "Internal Server error while login", false));
         }
     }
 
@@ -52,10 +50,10 @@ public class DevController {
                 return ResponseEntity.accepted().body(new DevResponse(null, "Developer already registered!", false));
             }
             TempDev tempDev = new TempDev(dev);
-            tempDev = tempDevService.saveTempDev(tempDev);
+            tempDev.setId(tempDevService.saveTempDev(tempDev).getId());
             OTP generatedOtp = otpService.generateOTP(tempDev.getId(), tempDev.getDevEmail());
-            Dev response = tempDev.removePassword();
-            return ResponseEntity.ok(new DevResponse(response, "OTP send successfully", true));
+            tempDev.removePassword();
+            return ResponseEntity.ok(new DevResponse(tempDev, "OTP send successfully", true));
         } catch (Exception e) {
             // Log the exception (logging framework would be used in a real application)
             System.out.println(e);

@@ -72,7 +72,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <image>
-                        <name>keshavcodex/kc-authenticator-server</name>
+                        <name>keshavcodex/kc-auth</name>
                     </image>
                     <excludes>
                         <exclude>

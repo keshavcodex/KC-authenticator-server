@@ -1,6 +1,7 @@
 package com.kc.authenticator.dto;
 
 public class PasswordResetRequest {
+    private String appId;
     private String email;
     private String frontendUrl;
 
@@ -19,5 +20,13 @@ public class PasswordResetRequest {
 
     public void setFrontendUrl(String frontendUrl) {
         this.frontendUrl = frontendUrl;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface AppRepository extends MongoRepository<App, String> {
     Optional<App> findByDevIdAndAppName(String devId, String appName);
+    Optional<App> findByDevIdAndAppNameIgnoreCase(String devId, String appName);
     List<App> findAllByDevId(String devId);
 
 }

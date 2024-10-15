@@ -37,7 +37,6 @@ public class DevService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-
     @Autowired
     private EmailService emailService;
 
@@ -60,9 +59,9 @@ public class DevService {
         // Check if the provided password matches the stored hashed password
         if (passwordEncoder.matches(password, developer.getPassword())) {
             developer.removePassword();
-            return new DevResponse(developer, "Logged in successfully", true);
+            return new DevResponse(developer, "Logged in successfully");
         } else {
-            return new DevResponse(null, "Password is incorrect", false);
+            return new DevResponse(null, "Password is incorrect");
         }
     }
 
@@ -73,9 +72,9 @@ public class DevService {
         developers.forEach(Dev::removePassword);
 
         if (developers.isEmpty()) {
-            return new DevListResponse(null, "No developers found", false);
+            return new DevListResponse(null, "No developers found");
         } else {
-            return new DevListResponse(developers, "Developers retrieved successfully", true);
+            return new DevListResponse(developers, "Developers retrieved successfully");
         }
     }
 
@@ -86,9 +85,9 @@ public class DevService {
         if (developerOptional.isPresent()) {
             Dev developer = developerOptional.get().removePassword();
 //            developer.removePassword(); // Remove password for security
-            return new DevResponse(developer, "Developer retrieved successfully", true);
+            return new DevResponse(developer, "Developer retrieved successfully");
         } else {
-            return new DevResponse(null, "Developer not found", false);
+            return new DevResponse(null, "Developer not found");
         }
     }
 
@@ -108,7 +107,7 @@ public class DevService {
             devRepository.deleteById(id);
             return new DevResponse(null, "Developer deleted successfully", true);
         } catch (Exception e) {
-            return new DevResponse(null, "Failed to delete developer. Developer might not exist.", false);
+            return new DevResponse(null, "Failed to delete developer. Developer might not exist.");
         }
     }
 
@@ -129,12 +128,12 @@ public class DevService {
                 devRepository.save(existingDev);
                 existingDev.removePassword(); // Remove password for security in the response
 
-                return new DevResponse(existingDev, "Developer updated successfully", true);
+                return new DevResponse(existingDev, "Developer updated successfully");
             } else {
-                return new DevResponse(null, "Developer not found", false);
+                return new DevResponse(null, "Developer not found");
             }
         } catch (Exception e) {
-            return new DevResponse(null, "Failed to update developer: " + e.getMessage(), false);
+            return new DevResponse(null, "Failed to update developer: " + e.getMessage());
         }
     }
 
@@ -159,7 +158,7 @@ public class DevService {
         } catch (Exception e) {
             // Handle error
             System.out.println(e);
-            return new DevResponse(null, "Unable to send reset link.", false);
+            return new DevResponse(null, "Unable to send reset link.");
         }
     }
 

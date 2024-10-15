@@ -19,7 +19,7 @@ public class AppResponse {
     public AppResponse(App clientApp, String message) {
         this.clientApp = clientApp;
         this.message = message;
-        this.isSuccess = true;
+        this.isSuccess = clientApp != null;
     }
 
     public AppResponse(App clientApp, String message, Boolean isSuccess) {

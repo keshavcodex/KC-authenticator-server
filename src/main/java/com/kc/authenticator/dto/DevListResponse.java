@@ -27,7 +27,6 @@ public class DevListResponse {
     public DevListResponse(List<Dev> developers, String message) {
         this.developers = developers;
         this.message = message;
-        this.isSuccess = true;
         this.count = developers.size();
     }
 

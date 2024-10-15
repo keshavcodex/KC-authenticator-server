@@ -46,11 +46,11 @@ public class Dev {
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+        this.firstName = firstName.trim();
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+        this.lastName = lastName.trim();
     }
 
     public void setPhone(String phone) {
@@ -58,7 +58,7 @@ public class Dev {
     }
 
     public void setDevEmail(String devEmail) {
-        this.devEmail = devEmail;
+        this.devEmail = devEmail.trim().toLowerCase();
     }
 
     public void setPassword(String password) {
@@ -74,12 +74,6 @@ public class Dev {
         this.setPhone(dev.getPhone());
         this.setDevEmail(dev.getDevEmail());
         this.setPassword(dev.getPassword());
-    }
-
-    public Dev(String firstName, String lastName, String devEmail) {
-        this.setFirstName(firstName);
-        this.setLastName(lastName);
-        this.setDevEmail(devEmail);
     }
 
     public Dev removePassword() {

@@ -3,7 +3,6 @@ package com.kc.authenticator.controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*")
 public class MainController {
     @GetMapping("/")
     public String home() {
