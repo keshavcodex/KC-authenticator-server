@@ -26,7 +26,7 @@ public class TempDev extends Dev {
         this.setFirstName(dev.getFirstName());
         this.setLastName(dev.getLastName());
         this.setPhone(dev.getPhone());
-        this.setDevEmail(dev.getDevEmail());
+        this.setDevEmail(dev.getDevEmail().toLowerCase());
         this.setPassword(dev.getPassword());
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(60);
         this.setExpiresAt(expiresAt);

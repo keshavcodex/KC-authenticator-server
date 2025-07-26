@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.kc.authenticator.model.TempUser;
 import com.kc.authenticator.repository.TempUserRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +53,7 @@ public class TempUserService {
     }
 
     public TempUser saveTempUser(TempUser tempUser) {
-        // If there's an existing usereloper with the same email, set its ID to override
+        // If there's an existing user with the same email, set its ID to override
         TempUser existingUser = tempUserRepository.findByAppIdAndEmail(tempUser.getAppId(), tempUser.getEmail());
         if (existingUser != null) {
             tempUser.setId(existingUser.getId());

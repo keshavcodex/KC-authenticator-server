@@ -34,7 +34,7 @@ public class Dev {
     }
 
     public String getDevEmail() {
-        return devEmail;
+        return devEmail.trim().toLowerCase();
     }
 
     public String getPassword() {
@@ -72,7 +72,7 @@ public class Dev {
         this.setFirstName(dev.getFirstName());
         this.setLastName(dev.getLastName());
         this.setPhone(dev.getPhone());
-        this.setDevEmail(dev.getDevEmail());
+        this.setDevEmail(dev.getDevEmail().trim().toLowerCase());
         this.setPassword(dev.getPassword());
     }
 

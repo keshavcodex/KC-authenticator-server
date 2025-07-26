@@ -28,7 +28,7 @@ public class TempUser extends User {
         this.setFirstName(user.getFirstName());
         this.setLastName(user.getLastName());
         this.setPhone(user.getPhone());
-        this.setEmail(user.getEmail());
+        this.setEmail(user.getEmail().trim().toLowerCase());
         this.setPassword(user.getPassword());
         LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(60);
         this.setExpiresAt(expiresAt);

@@ -4,7 +4,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -35,7 +34,7 @@ public class User {
         this.firstName = tempUser.firstName;
         this.lastName = tempUser.lastName;
         this.phone = tempUser.phone;
-        this.email = tempUser.email;
+        this.email = tempUser.email.toLowerCase();
         this.password = tempUser.password;
     }
 
@@ -80,7 +79,7 @@ public class User {
     }
 
     public String getEmail() {
-        return email;
+        return email.toLowerCase();
     }
 
     public void setEmail(String email) {
